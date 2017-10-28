@@ -2708,6 +2708,8 @@ with pkgs;
 
   innoextract = callPackage ../tools/archivers/innoextract { };
 
+  instiki-cli = callPackage ../applications/misc/instiki-cli { };
+
   intecture-agent = callPackage ../tools/admin/intecture/agent.nix { };
 
   intecture-auth = callPackage ../tools/admin/intecture/auth.nix { };
