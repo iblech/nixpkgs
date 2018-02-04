@@ -1,12 +1,12 @@
-{ stdenv, fetchFromGitHub, nodejs, perl, perlPackages, makeWrapper }:
+{ stdenv, fetchFromGitHub, nodejs, perl, diffutils, perlPackages, makeWrapper }:
 
 stdenv.mkDerivation rec {
   name = "instiki-cli-${version}";
-  version = "0.7";
+  version = "0.1";
 
   src = /home/iblech/instiki-cli;
 
-  buildInputs = [ makeWrapper perl perlPackages.HTMLParser perlPackages.LWP perlPackages.FileSlurp perlPackages.LWPProtocolHttps];
+  buildInputs = [ makeWrapper perl perlPackages.HTMLParser perlPackages.LWP perlPackages.FileSlurp perlPackages.LWPProtocolHttps ];
 
   installPhase = ''
     mkdir -p $out/bin
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   '';
 
   meta = with stdenv.lib; {
-    description = "";
+    description = "Edit Instiki wikis from the command line";
     longDescription = ''
     '';
     homepage = https://github.com/iblech/instiki-cli;
