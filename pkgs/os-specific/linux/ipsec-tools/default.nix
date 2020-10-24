@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     sha256 = "0b9gfbz78k2nj0k7jdlm5kajig628ja9qm0z5yksiwz22s3v7dlf";
   };
 
-  buildInputs = [ readline openssl_1_1 flex kerberos pam ];
+  buildInputs = [ readline openssl flex kerberos pam ];
 
   patches = [
     ./dont-create-localstatedir-during-install.patch
