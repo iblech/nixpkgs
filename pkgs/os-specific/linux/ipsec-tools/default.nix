@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, fetchpatch, linuxHeaders, readline, openssl_1_1, flex, kerberos, pam }:
+{ stdenv, fetchurl, fetchpatch, linuxHeaders, readline, openssl, flex, kerberos, pam }:
 
 # TODO: These tools are supposed to work under NetBSD and FreeBSD as
 # well, so I guess it's not appropriate to place this expression in
