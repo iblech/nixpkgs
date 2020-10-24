@@ -6195,7 +6195,7 @@ in
 
   ipsecTools = callPackage ../os-specific/linux/ipsec-tools {
     flex = flex_2_5_35;
-    openssl = openssl_1_0_2;
+    openssl = openssl_1_1;
   };
 
   patch = gnupatch;
