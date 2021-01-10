@@ -26279,6 +26279,8 @@ in
     useProprietaryAssets = false;
   };
 
+  koules = callPackage ../games/koules { };
+
   leela-zero = libsForQt5.callPackage ../games/leela-zero { };
 
   legendary-gl = python38Packages.callPackage ../games/legendary-gl { };
