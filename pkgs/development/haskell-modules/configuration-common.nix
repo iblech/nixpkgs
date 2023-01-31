@@ -2333,4 +2333,7 @@ self: super: {
   # bytestring <0.11.0, optparse-applicative <0.13.0
   # https://github.com/kseo/sfnt2woff/issues/1
   sfnt2woff = doJailbreak super.sfnt2woff;
+
+  # Use latest version until next Stackage LTS snapshot
+  Agda = doDistribute self.Agda_2_6_3;
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super

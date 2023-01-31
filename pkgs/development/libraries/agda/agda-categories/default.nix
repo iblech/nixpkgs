@@ -12,10 +12,10 @@ mkDerivation rec {
   };
 
   # Remove this once new version of agda-categories is released which
-  # directly references standard-library-1.7.1
+  # directly references standard-library-1.7.2
   postPatch = ''
     substituteInPlace agda-categories.agda-lib \
-      --replace 'standard-library-1.7' 'standard-library-1.7.1'
+      --replace 'standard-library-1.7' 'standard-library-1.7.2'
   '';
 
   buildInputs = [ standard-library ];

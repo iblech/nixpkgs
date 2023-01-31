@@ -81,6 +81,9 @@ let
           runHook postInstall
         '';
 
+        # see https://github.com/NixOS/nixpkgs/issues/172752
+        LC_ALL = "C.UTF-8";
+
         meta = if meta.broken or false then meta // { hydraPlatforms = lib.platforms.none; } else meta;
 
         # Retrieve all packages from the finished package set that have the current package as a dependency and build them
