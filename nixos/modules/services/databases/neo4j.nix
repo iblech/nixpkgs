@@ -35,65 +35,63 @@ let
 
   serverConfig = pkgs.writeText "neo4j.conf" ''
     # General
-    dbms.allow_upgrade=${boolToString cfg.allowUpgrade}
-    dbms.default_listen_address=${cfg.defaultListenAddress}
-    dbms.databases.default_to_read_only=${boolToString cfg.readOnly}
+    server.default_listen_address=${cfg.defaultListenAddress}
+    server.databases.default_to_read_only=${boolToString cfg.readOnly}
     ${optionalString (cfg.workerCount > 0) ''
-      dbms.threads.worker_count=${toString cfg.workerCount}
+      server.threads.worker_count=${toString cfg.workerCount}
     ''}
 
     # Directories (readonly)
-    dbms.directories.certificates=${cfg.directories.certificates}
-    dbms.directories.plugins=${cfg.directories.plugins}
-    dbms.directories.lib=${cfg.package}/share/neo4j/lib
+    server.directories.plugins=${cfg.directories.plugins}
+    server.directories.lib=${cfg.package}/share/neo4j/lib
     ${optionalString (cfg.constrainLoadCsv) ''
-      dbms.directories.import=${cfg.directories.imports}
+      server.directories.import=${cfg.directories.imports}
    ''}
 
     # Directories (read and write)
-    dbms.directories.data=${cfg.directories.data}
-    dbms.directories.logs=${cfg.directories.home}/logs
-    dbms.directories.run=${cfg.directories.home}/run
+    server.directories.data=${cfg.directories.data}
+    server.directories.logs=${cfg.directories.home}/logs
+    server.directories.run=${cfg.directories.home}/run
 
     # HTTP Connector
     ${optionalString (cfg.http.enable) ''
-      dbms.connector.http.enabled=${boolToString cfg.http.enable}
-      dbms.connector.http.listen_address=${cfg.http.listenAddress}
-      dbms.connector.http.advertised_address=${cfg.http.listenAddress}
+      server.http.enabled=${boolToString cfg.http.enable}
+      server.http.listen_address=${cfg.http.listenAddress}
+      server.http.advertised_address=${cfg.http.listenAddress}
     ''}
 
     # HTTPS Connector
-    dbms.connector.https.enabled=${boolToString cfg.https.enable}
-    dbms.connector.https.listen_address=${cfg.https.listenAddress}
-    dbms.connector.https.advertised_address=${cfg.https.listenAddress}
+    server.https.enabled=${boolToString cfg.https.enable}
+    server.https.listen_address=${cfg.https.listenAddress}
+    server.https.advertised_address=${cfg.https.listenAddress}
 
     # BOLT Connector
-    dbms.connector.bolt.enabled=${boolToString cfg.bolt.enable}
-    dbms.connector.bolt.listen_address=${cfg.bolt.listenAddress}
-    dbms.connector.bolt.advertised_address=${cfg.bolt.listenAddress}
-    dbms.connector.bolt.tls_level=${cfg.bolt.tlsLevel}
+    server.bolt.enabled=${boolToString cfg.bolt.enable}
+    server.bolt.listen_address=${cfg.bolt.listenAddress}
+    server.bolt.advertised_address=${cfg.bolt.listenAddress}
+    server.bolt.tls_level=${cfg.bolt.tlsLevel}
 
     # SSL Policies
     ${concatStringsSep "\n" sslPolicies}
 
     # Default retention policy from neo4j.conf
-    dbms.tx_log.rotation.retention_policy=1 days
+    db.tx_log.rotation.retention_policy=1 days
 
     # Default JVM parameters from neo4j.conf
-    dbms.jvm.additional=-XX:+UseG1GC
-    dbms.jvm.additional=-XX:-OmitStackTraceInFastThrow
-    dbms.jvm.additional=-XX:+AlwaysPreTouch
-    dbms.jvm.additional=-XX:+UnlockExperimentalVMOptions
-    dbms.jvm.additional=-XX:+TrustFinalNonStaticFields
-    dbms.jvm.additional=-XX:+DisableExplicitGC
-    dbms.jvm.additional=-Djdk.tls.ephemeralDHKeySize=2048
-    dbms.jvm.additional=-Djdk.tls.rejectClientInitiatedRenegotiation=true
-    dbms.jvm.additional=-Dunsupported.dbms.udc.source=tarball
+    server.jvm.additional=-XX:+UseG1GC
+    server.jvm.additional=-XX:-OmitStackTraceInFastThrow
+    server.jvm.additional=-XX:+AlwaysPreTouch
+    server.jvm.additional=-XX:+UnlockExperimentalVMOptions
+    server.jvm.additional=-XX:+TrustFinalNonStaticFields
+    server.jvm.additional=-XX:+DisableExplicitGC
+    server.jvm.additional=-Djdk.tls.ephemeralDHKeySize=2048
+    server.jvm.additional=-Djdk.tls.rejectClientInitiatedRenegotiation=true
+    server.jvm.additional=-Dunsupported.server.udc.source=tarball
 
-    #dbms.memory.heap.initial_size=12000m
-    #dbms.memory.heap.max_size=12000m
-    #dbms.memory.pagecache.size=4g
-    #dbms.tx_state.max_off_heap_memory=8000m
+    #server.memory.heap.initial_size=12000m
+    #server.memory.heap.max_size=12000m
+    #server.memory.pagecache.size=4g
+    #server.tx_state.max_off_heap_memory=8000m
 
     # Extra Configuration
     ${cfg.extraServerConfig}
@@ -106,7 +104,6 @@ in {
     (mkRenamedOptionModule [ "services" "neo4j" "listenAddress" ] [ "services" "neo4j" "defaultListenAddress" ])
     (mkRenamedOptionModule [ "services" "neo4j" "enableBolt" ] [ "services" "neo4j" "bolt" "enable" ])
     (mkRenamedOptionModule [ "services" "neo4j" "enableHttps" ] [ "services" "neo4j" "https" "enable" ])
-    (mkRenamedOptionModule [ "services" "neo4j" "certDir" ] [ "services" "neo4j" "directories" "certificates" ])
     (mkRenamedOptionModule [ "services" "neo4j" "dataDir" ] [ "services" "neo4j" "directories" "home" ])
     (mkRemovedOptionModule [ "services" "neo4j" "port" ] "Use services.neo4j.http.listenAddress instead.")
     (mkRemovedOptionModule [ "services" "neo4j" "boltPort" ] "Use services.neo4j.bolt.listenAddress instead.")
@@ -124,14 +121,6 @@ in {
       default = false;
       description = lib.mdDoc ''
         Whether to enable Neo4j Community Edition.
-      '';
-    };
-
-    allowUpgrade = mkOption {
-      type = types.bool;
-      default = false;
-      description = lib.mdDoc ''
-        Allow upgrade of Neo4j database files from an older version.
       '';
     };
 
@@ -214,24 +203,6 @@ in {
         '';
       };
 
-      sslPolicy = mkOption {
-        type = types.str;
-        default = "legacy";
-        description = lib.mdDoc ''
-          Neo4j SSL policy for BOLT traffic.
-
-          The legacy policy is a special policy which is not defined in
-          the policy configuration section, but rather derives from
-          {option}`directories.certificates` and
-          associated files (by default: {file}`neo4j.key` and
-          {file}`neo4j.cert`). Its use will be deprecated.
-
-          Note: This connector must be configured to support/require
-          SSL/TLS for the legacy policy to actually be utilized. See
-          {option}`bolt.tlsLevel`.
-        '';
-      };
-
       tlsLevel = mkOption {
         type = types.enum [ "REQUIRED" "OPTIONAL" "DISABLED" ];
         default = "OPTIONAL";
@@ -242,29 +213,6 @@ in {
     };
 
     directories = {
-      certificates = mkOption {
-        type = types.path;
-        default = "${cfg.directories.home}/certificates";
-        defaultText = literalExpression ''"''${config.${opt.directories.home}}/certificates"'';
-        description = lib.mdDoc ''
-          Directory for storing certificates to be used by Neo4j for
-          TLS connections.
-
-          When setting this directory to something other than its default,
-          ensure the directory's existence, and that read/write permissions are
-          given to the Neo4j daemon user `neo4j`.
-
-          Note that changing this directory from its default will prevent
-          the directory structure required for each SSL policy from being
-          automatically generated. A policy's directory structure as defined by
-          its {option}`baseDirectory`,{option}`revokedDir` and
-          {option}`trustedDir` must then be setup manually. The
-          existence of these directories is mandatory, as well as the presence
-          of the certificate file and the private key. Ensure the correct
-          permissions are set on these directories and files.
-        '';
-      };
-
       data = mkOption {
         type = types.path;
         default = "${cfg.directories.home}/data";
@@ -360,20 +308,6 @@ in {
         description = lib.mdDoc ''
           Neo4j listen address for HTTPS traffic. The listen address is
           expressed in the format `<ip-address>:<port-number>`.
-        '';
-      };
-
-      sslPolicy = mkOption {
-        type = types.str;
-        default = "legacy";
-        description = lib.mdDoc ''
-          Neo4j SSL policy for HTTPS traffic.
-
-          The legacy policy is a special policy which is not defined in the
-          policy configuration section, but rather derives from
-          {option}`directories.certificates` and
-          associated files (by default: {file}`neo4j.key` and
-          {file}`neo4j.cert`). Its use will be deprecated.
         '';
       };
     };
@@ -565,7 +499,7 @@ in {
     let
       # Assertion helpers
       policyNameList = attrNames cfg.ssl.policies;
-      validPolicyNameList = [ "legacy" ] ++ policyNameList;
+      validPolicyNameList = policyNameList;
       validPolicyNameString = concatStringsSep ", " validPolicyNameList;
 
       # Capture various directories left at their default so they can be created.
@@ -575,12 +509,6 @@ in {
 
     mkIf cfg.enable {
       assertions = [
-        { assertion = !elem "legacy" policyNameList;
-          message = "The policy 'legacy' is special to Neo4j, and its name is reserved."; }
-        { assertion = elem cfg.bolt.sslPolicy validPolicyNameList;
-          message = "Invalid policy assigned: `services.neo4j.bolt.sslPolicy = \"${cfg.bolt.sslPolicy}\"`, defined policies are: ${validPolicyNameString}"; }
-        { assertion = elem cfg.https.sslPolicy validPolicyNameList;
-          message = "Invalid policy assigned: `services.neo4j.https.sslPolicy = \"${cfg.https.sslPolicy}\"`, defined policies are: ${validPolicyNameString}"; }
       ];
 
       systemd.services.neo4j = {
