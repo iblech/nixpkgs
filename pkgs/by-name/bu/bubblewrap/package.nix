@@ -23,6 +23,8 @@ stdenv.mkDerivation rec {
     hash = "sha256-8IDMLQPeO576N1lizVudXUmTV6hNOiowjzRpEWBsZ+U=";
   };
 
+  patches = [ ./sysfs.patch ];
+
   postPatch = ''
     substituteInPlace tests/libtest.sh \
       --replace "/var/tmp" "$TMPDIR"
