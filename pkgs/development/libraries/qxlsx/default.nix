@@ -24,6 +24,11 @@ stdenv.mkDerivation rec {
       url = "https://github.com/QtExcel/QXlsx/commit/90d762625750c6b2c73f6cd96b633e9158aed72e.patch";
       hash = "sha256-/0xLrkjuJGZRocK1EyBhuaUmg0usueQz2F340DkQhb0=";
     })
+    # Add find_dependency calls to CMake config file for Qt6::GuiPrivate
+    (fetchpatch {
+      url = "https://github.com/QtExcel/QXlsx/commit/393f3675b64bf838ae8b1f8997e1bcff92f40f0d.patch";
+      hash = "sha256-lUvrnq74vw5eyNqgjAy0DKFF1WjQJqCuu0UFYAc6ZS0=";
+    })
   ];
 
   nativeBuildInputs = [ cmake ];
