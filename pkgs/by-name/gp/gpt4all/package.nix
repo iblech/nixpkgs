@@ -6,6 +6,7 @@
   fetchurl,
   cmake,
   qt6,
+  qt6Packages,
   duckx,
   fmt,
   shaderc,
@@ -34,6 +35,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   patches = [
+    ./use-system-qxlsx.patch
     ./embedding-local.patch
   ];
 
@@ -67,6 +69,7 @@ stdenv.mkDerivation (finalAttrs: {
     shaderc
     vulkan-headers
     wayland
+    qt6Packages.qxlsx
   ]
   ++ lib.optionals cudaSupport (
     with cudaPackages;
